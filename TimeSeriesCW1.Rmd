@@ -1,0 +1,61 @@
+---
+title: "Time Series - co2"
+author: "Twisha Patel"
+date: "2024-03-15"
+output: html_document
+---
+## What is the co2 Time Series? 
+##What purpose does it have?
+
+The co2 Time Series is which measures the atmospheric concentration of co2 in the air. This time series was measured from 1959 - 1997 on a monthly basis. The co2 concentration is measured in parts per million (ppm). It is also known that February, March and April in the year 1964 are missing. In order to fix this, linear interpolation has been used using values of January 1964 and May 1964 in order to retrieve the missing figures. 
+
+The purpose of this project is to forecast the co2 concentration in the atmosphere. It is vital to see what causes influence towards certain variables which allow the forecast to change between periods. This allows us to anaylse the effects and rate of climate change and changes to our environment. It could also help monitor and place interventions in order to prevent/delay climate change.
+
+```{r co2}
+#install.packages("prophet")
+library(prophet)
+data("co2")
+co2<- datasets::co2
+?co2
+```
+
+In the coding above, we can see the use of 'install.packages("prophet")'. The reason this has been hashtagged is because package installation should only happen once hence there is no need to add it to the instructions of my file.
+
+Then, we open up the directory of all packages and retrieve the package called 'prophet'. To visualise the data, I used data("co2") in order to see it in a table format. Furthermore, to read and understand the concept of the data, I used '?co2' to find and gain more information. 
+
+## Creating a Dataframe
+
+In order to set a time series as a dataframe, we used the code:
+
+```{r dataframe}
+co2.df = data.frame(
+  ds=zoo::as.yearmon(time(co2)), 
+  y=co2)
+```
+
+I used the function data.frame() to created named columns: ds and y. This allows us to create the x and y axis of the plot. Furthermore, from the zoo library, we used the 'yearmon' class as it represents monthly data and we used it to convert data to a vector of dates. 
+
+## Plotting our time series
+
+```{r plot, echo=FALSE}
+m = prophet::prophet(co2.df, weekly.seasonality = "TRUE", daily.seasonality = "TRUE")
+f = prophet::make_future_dataframe(m, periods=8, freq="quarter")
+p = predict(m, f)
+plot(m,p)
+```
+
+To the code chunk, we added the `echo = FALSE` parameter to prevent the R code from running yet allows the plot that was generated to stay.
+
+We created a variable called 'm' and we stored our dataframe within that variable using the prophet package to forecast the time series.
+
+After, we created a new variable called 'f' in order to make future forecasts using the same prophet package however for eight periods and at a quarterly frequency.
+
+Using the 'predict' function, we predict the time series using the current forecast and the future forecast. We use this to predict 'm'. 
+
+Lastly, we display our forecast using the 'plot' function. This demonstrates a 
+scattergraph with connected plots demonstrating a time series.
+
+In this plot, we see a positive correlation. Over the 40 years, we notice a gradual yet significant increase in co2 concentration within the atmosphere. Additionally, there are very frequent increases and decreases of co2 concentration which are roughly of similar magnitude. Despite this, there is still a gradual increase. From 1960 to 2000, there has been an increase of 50 parts per million. This could further suggest a rise in climate change as an increase in co2 concentration is a potential result of climate change.
+
+
+
